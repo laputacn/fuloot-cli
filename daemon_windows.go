@@ -5,7 +5,7 @@ package fulootcli
 import "fmt"
 
 func runDaemonStart(string) error {
-	return fmt.Errorf("Windows 不支持 daemon 模式，请使用「fuloot start -f」前台运行")
+	return fmt.Errorf("Windows 不支持 daemon 模式，请直接使用「fuloot start」前台运行")
 }
 
 func runDaemonStop(string) error {

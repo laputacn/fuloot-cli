@@ -26,22 +26,19 @@ type App struct {
 }
 
 var (
-	app            App
-	pidFile        string
-	foregroundMode bool
-	runMode        string
+	app        App
+	pidFile    string
+	daemonMode bool
+	runMode    string
 )
 
 func buildRootCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "fuloot",
 		Short: "FulootAPI WebSocket + HTTP API 服务",
-		Long:  "FulootAPI 基于 Gin 提供 HTTP API 与 WebSocket。\n不带子命令时默认启动 Web 服务。",
+		Long:  "FulootAPI 基于 Gin 提供 HTTP API 与 WebSocket。\n不带子命令时默认前台启动 Web 服务。",
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := runDaemonStart(pidFile); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
+			app.StartFunc(runMode)
 		},
 	}
 
@@ -55,15 +52,15 @@ func buildRootCmd() *cobra.Command {
 
 	startCmd := &cobra.Command{
 		Use:   "start",
-		Short: "启动 HTTP 服务（默认后台，-f 前台）",
-		Long: `启动 FulootAPI 服务。默认以后台 daemon 方式运行，仅显示 banner 信息。
-加 -f 可切换为前台模式。使用 --mode 可覆盖配置文件中的运行模式。`,
+		Short: "启动 HTTP 服务（默认前台，-d 后台）",
+		Long: `启动 FulootAPI 服务。默认以前台方式运行。
+加 -d 可切换为 daemon 后台模式。使用 --mode 可覆盖配置文件中的运行模式。`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if foregroundMode {
-				app.StartFunc(runMode)
-				return nil
+			if daemonMode {
+				return runDaemonStart(pidFile)
 			}
-			return runDaemonStart(pidFile)
+			app.StartFunc(runMode)
+			return nil
 		},
 	}
 
@@ -97,7 +94,7 @@ func buildRootCmd() *cobra.Command {
 	defaultPid := filepath.Join("logs", "fuloot.pid")
 	rootCmd.PersistentFlags().StringVar(&pidFile, "pid-file", defaultPid, "PID 文件路径")
 
-	startCmd.Flags().BoolVarP(&foregroundMode, "foreground", "f", false, "以前台方式运行（显示全部日志）")
+	startCmd.Flags().BoolVarP(&daemonMode, "daemon", "d", false, "以 daemon 后台方式运行")
 	startCmd.Flags().StringVar(&runMode, "mode", "", "运行模式: debug / release（覆盖 config）")
 
 	rootCmd.AddCommand(versionCmd, startCmd, stopCmd, restartCmd, statusCmd)

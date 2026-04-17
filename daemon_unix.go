@@ -50,7 +50,7 @@ func runDaemonStart(pidPath string) error {
 	}
 	defer logF.Close()
 
-	args := []string{"start", "-f"}
+	args := []string{"start"}
 	if runMode != "" {
 		args = append(args, "--mode", runMode)
 	}
