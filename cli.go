@@ -12,6 +12,13 @@ import (
 
 // App describes the application to be managed by the CLI.
 type App struct {
+	// ProjectName is displayed in the startup and status banners.
+	// When empty, it defaults to "FulootAPI" for backward compatibility.
+	ProjectName string
+
+	// PluginMode indicates whether the managed application has plugin mode enabled.
+	PluginMode bool
+
 	// Version string, typically injected via -ldflags at build time.
 	Version string
 

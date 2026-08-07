@@ -20,12 +20,23 @@ import (
 
 func main() {
     fulootcli.Run(fulootcli.App{
-        Version:   "1.0.0",
-        StartFunc: cmd.StartServer,
-        InfoFunc:  cmd.GetInfo,
+        ProjectName: "fuloot-plugin-server",
+        PluginMode:  true,
+        Version:     "1.0.0",
+        StartFunc:   cmd.StartServer,
+        InfoFunc:    cmd.GetInfo,
     })
 }
 ```
+
+启动和 `status` Banner 会显示项目名称及插件模式状态：
+
+```text
+project name             fuloot-plugin-server
+plugin mode              enabled
+```
+
+`ProjectName` 留空时默认显示 `FulootAPI`；`PluginMode` 默认值为 `false`，Banner 显示 `disabled`。
 
 ## 命令说明
 
