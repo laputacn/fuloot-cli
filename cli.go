@@ -30,6 +30,10 @@ type App struct {
 	// It should load configuration and return the listen port and run mode.
 	// modeOverride is the value of --mode flag; empty string means not set.
 	InfoFunc func(modeOverride string) (port, mode string)
+
+	// PluginsFunc returns plugin-module information and locally installed plugins.
+	// When nil, the plugins command is not registered.
+	PluginsFunc func() (PluginModuleInfo, []PluginInfo, error)
 }
 
 var (
@@ -105,6 +109,21 @@ func buildRootCmd() *cobra.Command {
 	startCmd.Flags().StringVar(&runMode, "mode", "", "运行模式: debug / release（覆盖 config）")
 
 	rootCmd.AddCommand(versionCmd, startCmd, stopCmd, restartCmd, statusCmd)
+	if app.PluginsFunc != nil {
+		rootCmd.AddCommand(&cobra.Command{
+			Use:   "plugins",
+			Short: "显示插件模块及已安装插件状态",
+			Args:  cobra.NoArgs,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				module, plugins, err := app.PluginsFunc()
+				if err != nil {
+					return err
+				}
+				PrintPlugins(module, plugins)
+				return nil
+			},
+		})
+	}
 	return rootCmd
 }
 

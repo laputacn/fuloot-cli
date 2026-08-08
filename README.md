@@ -49,6 +49,7 @@ plugin mode              enabled
 | `./app stop` | 停止后台进程 |
 | `./app restart` | 重启后台服务 |
 | `./app status` | 查看进程状态 |
+| `./app plugins` | 显示插件模块信息及本机已安装插件列表（应用配置 `PluginsFunc` 后启用） |
 | `./app version` | 打印版本号 |
 
 > **设计原则**：`start` 默认前台运行，便于 air 等热重载工具管理进程生命周期；加 `-d` 才以守护进程方式后台运行，用于生产部署。
