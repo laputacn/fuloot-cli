@@ -3,9 +3,11 @@
 package fulootcli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 
 	"github.com/spf13/cobra"
 )
@@ -109,6 +111,20 @@ func buildRootCmd() *cobra.Command {
 	startCmd.Flags().StringVar(&runMode, "mode", "", "运行模式: debug / release（覆盖 config）")
 
 	rootCmd.AddCommand(versionCmd, startCmd, stopCmd, restartCmd, statusCmd)
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "build-info",
+		Short: "打印当前可执行文件的 Go 编译信息（JSON）",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			info, ok := debug.ReadBuildInfo()
+			if !ok {
+				return fmt.Errorf("build information unavailable")
+			}
+			encoder := json.NewEncoder(os.Stdout)
+			encoder.SetIndent("", "  ")
+			return encoder.Encode(info)
+		},
+	})
 	if app.PluginsFunc != nil {
 		rootCmd.AddCommand(&cobra.Command{
 			Use:   "plugins",

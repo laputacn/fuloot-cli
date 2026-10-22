@@ -1,0 +1,187 @@
+{
+  "toolchain": "go1.26.10",
+  "projects": [
+    {
+      "name": "cli",
+      "path": ".",
+      "targets": [
+        {
+          "name": "fuloot-dev",
+          "script": "build.sh",
+          "artifact": "fuloot-dev"
+        }
+      ]
+    },
+    {
+      "name": "petmini-v2",
+      "path": "../../petmini/api-petmini",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "petmini-v1",
+      "path": "../../petmini-v1/api-petmini",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "movie-fuloot",
+      "path": "../../movie/fuloot/api",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "movie-rys",
+      "path": "../../movie/rys/api",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "movie-whoa",
+      "path": "../../movie/whoa/api",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "tripmini",
+      "path": "../../tripmini/api-trip",
+      "targets": [
+        {
+          "name": "api",
+          "script": "build.sh",
+          "artifact": "fuloot"
+        }
+      ]
+    },
+    {
+      "name": "plugin-runtime",
+      "path": "../../petmini/fuloot-plugin-runtime",
+      "targets": [
+        {
+          "name": "runtime",
+          "script": "build.sh",
+          "artifact": "fuloot-plugin-runtime"
+        },
+        {
+          "name": "ingress-agent",
+          "script": "build-ingress-agent.sh",
+          "artifact": "fuloot-ingress-agent"
+        }
+      ]
+    },
+    {
+      "name": "plugin-server",
+      "path": "../../petmini/fuloot-plugin-server",
+      "targets": [
+        {
+          "name": "market",
+          "script": "build.sh",
+          "artifact": "fuloot-plugin-server"
+        }
+      ]
+    },
+    {
+      "name": "plugin-ai-apiyi-server",
+      "path": "../../petmini/plugin-ai-apiyi-server",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-ai-apiyi-server",
+          "script": "build.sh",
+          "artifact": "plugin-ai-apiyi-server.zip",
+          "binary": "bin/plugin-ai-apiyi-server"
+        }
+      ]
+    },
+    {
+      "name": "plugin-canvas-map-studio-server",
+      "path": "../../petmini/plugin-canvas-map-studio-server",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-canvas-map-studio-server",
+          "script": "build.sh",
+          "artifact": "plugin-canvas-map-studio-server.zip",
+          "binary": "bin/plugin-canvas-map-studio-server"
+        }
+      ]
+    },
+    {
+      "name": "plugin-farm-server",
+      "path": "../../petmini/plugin-farm-server",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-farm-server",
+          "script": "build.sh",
+          "artifact": "plugin-farm-server.zip",
+          "binary": "bin/plugin-farm-server"
+        }
+      ]
+    },
+    {
+      "name": "plugin-fuloot-world",
+      "path": "../../petmini/plugin-fuloot-world",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-fuloot-world",
+          "script": "build.sh",
+          "artifact": "plugin-fuloot-world.zip",
+          "binary": "bin/plugin-fuloot-world"
+        }
+      ]
+    },
+    {
+      "name": "plugin-map-studio-server",
+      "path": "../../petmini/plugin-map-studio-server",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-map-studio-server",
+          "script": "build.sh",
+          "artifact": "plugin-map-studio-server.zip",
+          "binary": "bin/plugin-map-studio-server"
+        }
+      ]
+    },
+    {
+      "name": "plugin-scenic-tour-server",
+      "path": "../../petmini/plugin-scenic-tour-server",
+      "manifest": "manifest.json",
+      "targets": [
+        {
+          "name": "plugin-scenic-tour-server",
+          "script": "build.sh",
+          "artifact": "plugin-scenic-tour-server.zip",
+          "binary": "bin/plugin-scenic-tour-server"
+        }
+      ]
+    }
+  ]
+}
