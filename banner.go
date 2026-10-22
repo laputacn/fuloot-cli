@@ -34,7 +34,7 @@ func printBanner(action, port, mode string) {
 	fmt.Println(strings.Repeat("─", 52))
 	printRow("Author", author)
 	printRow("Email", email)
-	printRow("project name", projectName())
+	printIdentity(app)
 	printRow("plugin mode", pluginModeStatus())
 	printRow("action", action)
 	printRow("listen address", "0.0.0.0")
@@ -42,21 +42,13 @@ func printBanner(action, port, mode string) {
 	printRow("pid", fmt.Sprintf("%d", os.Getpid()))
 	printRow("gin mode", ginMode)
 	printRow("go version", runtime.Version())
-	printRow("fuloot version", app.Version)
+	printVersions(app)
 	printRow("run mode", mode)
 	printRow("config dir", "config/")
 	printRow("log dir", "logs/")
 	printRow("GOOS/GOARCH", runtime.GOOS+"/"+runtime.GOARCH)
 	fmt.Println(strings.Repeat("─", 52))
 	fmt.Println()
-}
-
-func projectName() string {
-	name := strings.TrimSpace(app.ProjectName)
-	if name == "" {
-		return "FulootAPI"
-	}
-	return name
 }
 
 func pluginModeStatus() string {

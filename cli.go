@@ -18,10 +18,21 @@ type App struct {
 	// When empty, it defaults to "FulootAPI" for backward compatibility.
 	ProjectName string
 
+	// FulootVersion is the system release, usually FulootV1Version or FulootV2Version.
+	// Empty defaults to V1; PluginMode does not select a system generation.
+	FulootVersion string
+	// AppName and AppVersion identify this business application.
+	AppName    string
+	AppVersion string
+	// PluginName and PluginVersion are shown only for an actual business plugin.
+	PluginName    string
+	PluginVersion string
+
 	// PluginMode indicates whether the managed application has plugin mode enabled.
 	PluginMode bool
 
-	// Version string, typically injected via -ldflags at build time.
+	// Version is the legacy application version, used when AppVersion is empty.
+	// Deprecated: use AppVersion. It never denotes the Fuloot system release.
 	Version string
 
 	// StartFunc is called to run the server in foreground mode.
@@ -59,7 +70,7 @@ func buildRootCmd() *cobra.Command {
 		Use:   "version",
 		Short: "打印程序版本",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprintln(os.Stdout, app.Version)
+			fmt.Fprintln(os.Stdout, appVersion(app))
 		},
 	}
 

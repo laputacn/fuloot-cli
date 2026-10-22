@@ -47,6 +47,11 @@ func PrintPlugins(module PluginModuleInfo, plugins []PluginInfo) {
 	fmt.Print(pluginsLogo)
 	fmt.Print("\033[0m")
 	fmt.Println(strings.Repeat("─", 72))
+	identity := App{ProjectName: "FulootPlug", FulootVersion: FulootV2Version,
+		AppName: defaultString(module.Name, "Fuloot Plugin Runtime"), AppVersion: module.Version}
+	printIdentity(identity)
+	printVersions(identity)
+	printPluginRow("go version", runtime.Version())
 	printPluginRow("module name", defaultString(module.Name, "Fuloot Plugins"))
 	printPluginRow("module status", enabledStatus(module.Enabled))
 	printPluginRow("runtime protocol", defaultString(module.RuntimeProtocol, "v1"))

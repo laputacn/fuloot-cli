@@ -20,9 +20,11 @@ import (
 
 func main() {
     fulootcli.Run(fulootcli.App{
-        ProjectName: "fuloot-plugin-server",
-        PluginMode:  true,
-        Version:     "1.0.0",
+        ProjectName:   "FulootAPI",
+        FulootVersion: fulootcli.FulootV1Version,
+        AppName:       "RYS Movie",
+        AppVersion:    cmd.Version,
+        PluginMode:    false,
         StartFunc:   cmd.StartServer,
         InfoFunc:    cmd.GetInfo,
     })
@@ -32,11 +34,38 @@ func main() {
 启动和 `status` Banner 会显示项目名称及插件模式状态：
 
 ```text
-project name             fuloot-plugin-server
-plugin mode              enabled
+project name             FulootAPI
+app name                 RYS Movie
+plugin mode              disabled
+fuloot version           1.0.0
+app version              1.0.20
 ```
 
-`ProjectName` 留空时默认显示 `FulootAPI`；`PluginMode` 默认值为 `false`，Banner 显示 `disabled`。
+`ProjectName` 表示产品（API 为 `FulootAPI`，插件平台/插件为 `FulootPlug`），
+`AppName` 表示具体业务名称。`FulootVersion` 选用 CLI 中的 `FulootV1Version`
+或 `FulootV2Version`；当前分别为 `1.0.0`、`2.0.0`。带插件基座的 petmini
+使用 V2，旧宠物、影视、旅游分支使用 V1；关闭插件模式不会把 V2 变成 V1。
+以后系统版本的补丁更新只需修改 CLI 的 `identity.go` 并推送，项目重新 build 即可。
+
+`AppVersion` 是业务构建版本，继续由 `build.sh -v` 注入 `cmd.Version`。
+旧 `Version` 字段仍作为 `AppVersion` 的兼容回退；`version` 命令始终输出应用版本。
+未指定系统版本时默认 V1，未指定名称时默认 `FulootAPI`，未指定应用版本时显示 `dev`。
+`PluginMode` 默认值为 `false`，Banner 显示 `disabled`。
+
+独立插件进程从编译时嵌入的 `manifest.json` 读取名称与版本：
+
+```go
+info, err := fulootcli.PluginInfoFromManifest(pluginmeta.ManifestJSON, version)
+if err != nil { log.Fatal(err) }
+version = info.Version // 构建注入优先；未注入时使用 manifest 版本
+fulootcli.PrintPluginBanner(info, socket)
+```
+
+插件横幅显示 `project name = FulootPlug`、`fuloot version = 2.0.0`，
+`app name` 为插件 ID，`app version` 为构建版本，另有 `plugin name`（清单名称）
+及 `plugin version`（打包清单的版本）。插件通过 gRPC 运行，显示真实监听 endpoint，
+不增加 HTTP/daemon 命令。使用通用 `Run` 的插件也可以设置 `App.PluginName` 和
+`App.PluginVersion`。插件运行时/市场服务本身显示应用信息，已安装插件列表仍逐项显示名称和版本。
 
 ## 命令说明
 
@@ -75,7 +104,7 @@ CLI。默认跟随 `https://github.com/laputacn/fuloot-cli.git` 的 `main` 分�
 解析失败不会覆盖原来的项目配置。线上 CLI 的 replace 会被拒绝，避免误用本地代码。
 
 启动横幅的 `go version` 始终来自 `runtime.Version()`，显示真实编译器版本。
-`fuloot version` 仍是业务版本，由业务 `build.sh -v=...` 注入。更新 CLI 不会改变它。
+`fuloot version` 是中央系统版本；`app version` 是业务版本，由业务 `build.sh -v=...` 注入。
 CLI 提供的 start/stop/restart/status、横幅和通用命令会随重编译更新；需要新增业务
 回调、配置或服务接口的功能，仍须在对应业务实现接入。
 

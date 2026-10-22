@@ -3,42 +3,59 @@ package fulootcli
 import (
 	"io"
 	"os"
+	"regexp"
+	"runtime"
 	"strings"
 	"testing"
 )
 
-func TestPrintBannerIncludesProjectInformation(t *testing.T) {
-	previousApp := app
-	app = App{ProjectName: "fuloot-plugin-server", PluginMode: true, Version: "2.0.0"}
-	t.Cleanup(func() { app = previousApp })
-
-	output := captureStdout(t, func() {
-		printBanner("start", "8091", "release")
-	})
-
-	for _, expected := range []string{
-		"project name", "fuloot-plugin-server",
-		"plugin mode", "enabled",
-		"fuloot version", "2.0.0",
+func TestBannerSeparatesSystemAndAppVersions(t *testing.T) {
+	previous := app
+	t.Cleanup(func() { app = previous })
+	for _, tc := range []struct {
+		name                             string
+		value                            App
+		system, version, nameValue, mode string
+	}{
+		{"legacy", App{Version: "1.0.20"}, FulootV1Version, "1.0.20", "FulootAPI", "disabled"},
+		{"movie", App{AppName: "RYS Movie", AppVersion: "1.0.20", Version: "old"}, FulootV1Version, "1.0.20", "RYS Movie", "disabled"},
+		{"v2-disabled", App{FulootVersion: FulootV2Version, AppName: "Petmini", AppVersion: "3.4.5"}, FulootV2Version, "3.4.5", "Petmini", "disabled"},
+		{"v2-enabled", App{FulootVersion: FulootV2Version, PluginMode: true, AppVersion: "3.4.5"}, FulootV2Version, "3.4.5", "FulootAPI", "enabled"},
+		{"defaults", App{}, FulootV1Version, "dev", "FulootAPI", "disabled"},
 	} {
-		if !strings.Contains(output, expected) {
-			t.Fatalf("banner output does not contain %q:\n%s", expected, output)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			app = tc.value
+			for _, action := range []string{"start", "start -d (daemon)", "status"} {
+				output := captureStdout(t, func() { PrintBanner(action, "8086", "produce") })
+				assertBannerRows(t, output, map[string]string{
+					"project name": "FulootAPI", "app name": tc.nameValue, "fuloot version": tc.system,
+					"app version": tc.version, "plugin mode": tc.mode, "action": action, "go version": runtime.Version(),
+				})
+				if strings.Contains(output, "plugin name") || strings.Contains(output, "plugin version") {
+					t.Fatal("host banner incorrectly claims a plugin identity")
+				}
+			}
+			output := captureStdout(t, func() {
+				cmd := buildRootCmd()
+				cmd.SetArgs([]string{"version"})
+				if err := cmd.Execute(); err != nil {
+					t.Fatal(err)
+				}
+			})
+			if strings.TrimSpace(output) != tc.version {
+				t.Fatalf("version = %q, want %q", output, tc.version)
+			}
+		})
 	}
 }
 
-func TestPrintBannerUsesBackwardCompatibleDefaults(t *testing.T) {
-	previousApp := app
-	app = App{}
-	t.Cleanup(func() { app = previousApp })
-
-	output := captureStdout(t, func() {
-		printBanner("status", "8090", "debug")
-	})
-
-	for _, expected := range []string{"FulootAPI", "disabled"} {
-		if !strings.Contains(output, expected) {
-			t.Fatalf("banner output does not contain default %q:\n%s", expected, output)
+func assertBannerRows(t *testing.T, output string, expected map[string]string) {
+	t.Helper()
+	clean := regexp.MustCompile(`\x1b\[[0-9;]*m`).ReplaceAllString(output, "")
+	for label, value := range expected {
+		row := regexp.MustCompile(`(?m)^  ` + regexp.QuoteMeta(label) + ` +` + regexp.QuoteMeta(value) + `$`)
+		if !row.MatchString(clean) {
+			t.Fatalf("missing row %q = %q:\n%s", label, value, clean)
 		}
 	}
 }
