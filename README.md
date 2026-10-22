@@ -5,7 +5,7 @@ FulootAPI 的 CLI 脚手架库，提供进程管理（start/stop/restart/status�
 ## 安装
 
 ```bash
-go get github.com/laputacn/fuloot-cli@latest
+go get github.com/laputacn/fuloot-cli@main
 ```
 
 ## 使用
